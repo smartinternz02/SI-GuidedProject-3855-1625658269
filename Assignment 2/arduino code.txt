@@ -1,0 +1,61 @@
+// importing servo package
+#include <Servo.h>
+
+//setting up pin numbers
+Servo motor;
+int signal = 3;
+int trigger = 4;
+int echo = 5;
+
+void setup()
+{
+  //configuring pins
+  pinMode(signal, OUTPUT);
+  pinMode(trigger, OUTPUT);
+  pinMode(echo, INPUT);
+  motor.attach(signal);
+  
+  //using serial monitor to debug the results
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  //keep the doors closed initially
+  motor.write(0);
+    
+  //Initiating trigger
+  digitalWrite(trigger, LOW);
+  digitalWrite(trigger, HIGH);
+  delayMicroseconds(20);
+  digitalWrite(trigger, LOW);
+  
+  //receiving echo
+  float dur = pulseIn(echo, HIGH);
+  
+  //calculating distance using formula
+  float dis = (dur * 0.035)/2;
+  
+  //print the distance recorded by Ultra Sonic sensor
+  Serial.print("Distance measured: ");
+  Serial.println(dis);
+  
+  //open if distance less than 2m
+  if(dis  < 200){
+    
+    //open the garage doors when vehicle approaches
+    motor.write(90);
+    Serial.println("Doors opened.");
+    
+    //wait gates opened for 30 secs to enter vehicle
+    delay(15 * 1000);
+    
+    //close the doors again
+    motor.write(0);  
+    
+    //delay sensing ditance to ensure the doors closed
+    delay(2 * 1000);
+    Serial.println("Doors closed.");
+  }
+  
+}
